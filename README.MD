@@ -1,0 +1,1 @@
+# Example using .Net Core 2 Web Socket with AWS Lambda
