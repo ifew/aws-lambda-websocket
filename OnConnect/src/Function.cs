@@ -29,19 +29,19 @@ namespace OnConnect
             
             try
             {
-                ConnectionSocketInputModel connectionInput = JsonConvert.DeserializeObject<ConnectionSocketInputModel>(request.Body);
+                //ConnectionSocketInputModel connectionInput = JsonConvert.DeserializeObject<ConnectionSocketInputModel>(request.Body);
             
                 var connectionId = request.RequestContext.ConnectionId;
                 context.Logger.LogLine($"ConnectionId: {connectionId}");
 
                 ConnectionSocketModel connection = new ConnectionSocketModel{
                     connection_id = connectionId,
-                    channel = connectionInput.channel,
-                    user_id = connectionInput.user_id
+                    // channel = connectionInput.channel,
+                    // user_id = connectionInput.user_id
                 };
                 
                 var connectionService = _service.GetService<ConnectionSocketService>();
-                var response = connectionService.AddConnection(connection);
+                var response = await connectionService.AddConnection(connection);
 
                 return response;
             }

@@ -16,24 +16,32 @@ namespace OnConnect
             _context_db = context_db;
         }
 
-        public APIGatewayProxyResponse AddConnection(ConnectionSocketModel data)
+        public async Task<APIGatewayProxyResponse> AddConnection(ConnectionSocketModel data)
         {
-            data.add_datetime = DateTime.Now;
-            
-            _context_db.Connections.Add(data);
-            _context_db.SaveChanges();
+            try {
+                data.add_datetime = DateTime.Now;
+                
+                _context_db.Connections.Add(data);
+                _context_db.SaveChanges();
 
-            APIGatewayProxyResponse respond = new APIGatewayProxyResponse {
-                StatusCode = (int)HttpStatusCode.OK,
-                Headers = new Dictionary<string, string>
-                { 
-                    { "Content-Type", "application/json" }, 
-                    { "Access-Control-Allow-Origin", "*" } 
-                },
-                Body = "Connected"
-            };
+                APIGatewayProxyResponse respond = new APIGatewayProxyResponse {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Headers = new Dictionary<string, string>
+                    { 
+                        { "Content-Type", "application/json" }, 
+                        { "Access-Control-Allow-Origin", "*" } 
+                    },
+                    Body = "Connected"
+                };
 
-            return respond;
+                return await Task.FromResult(respond);
+            } 
+            catch(Exception e) {
+                return new APIGatewayProxyResponse {
+                    StatusCode = 500,
+                    Body = $"Service Fail: {e.Message}"
+                };
+            }
         }
     }
 }

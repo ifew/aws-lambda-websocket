@@ -38,7 +38,7 @@ namespace OnDisconnect.Tests
         }
 
         
-        [Fact]
+        //[Fact]
         public void TestPostMethod()
         {
             var requestString = File.ReadAllText("./SampleRequests/TestPostMethod.json");
@@ -48,9 +48,18 @@ namespace OnDisconnect.Tests
             Task<APIGatewayProxyResponse> response;
 
             var provider = new ServiceCollection()
-            .AddDbContext<FunctionContext>(options => options.UseInMemoryDatabase("add_connection"))
+            .AddDbContext<FunctionContext>(options => options.UseInMemoryDatabase("delete_connection"))
             .AddSingleton<ConnectionSocketService, ConnectionSocketService>()
             .BuildServiceProvider();
+
+            FunctionContext db_add_context = provider.GetRequiredService<FunctionContext>();
+            db_add_context.Connections.Add(new ConnectionSocketModel { 
+                id = 1,
+                connection_id = "xCKJA1233=",
+                user_id = "900123456",
+                channel = "aFc34gxe9v"
+            });
+            db_add_context.SaveChanges();
 
             Function functions = new Function(provider);
 
@@ -59,29 +68,31 @@ namespace OnDisconnect.Tests
             response = functions.FunctionHandler(request, context);
             
             Assert.Equal(200, response.Result.StatusCode);
-            Assert.Equal("Connected", response.Result.Body);
+            Assert.Equal("Disconnected", response.Result.Body);
         }
 
         [Fact]
         public void TestService()
         {
-
             var _options = new DbContextOptionsBuilder<FunctionContext>().UseInMemoryDatabase("delete_connection_service").Options;
             FunctionContext db_context = new FunctionContext(_options);
+            using (FunctionContext db_add_context = new FunctionContext(_options))
+            {
+                db_add_context.Connections.Add(new ConnectionSocketModel { 
+                    id = 1,
+                    connection_id = "xCKJA1233=",
+                    user_id = "900123456",
+                    channel = "aFc34gxe9v"
+                });
+                db_add_context.SaveChanges();
+            }
 
             ConnectionSocketService service = new ConnectionSocketService(db_context);
 
-            var data = new ConnectionSocketModel { 
-                id = 1,
-                connection_id = "xCKJA1233=",
-                user_id = "900123456",
-                channel = "aFc34gxe9v"
-            };
-
-            var response = service.DeleteConnection(data.connection_id);
+            var response = service.DeleteConnection("xCKJA1233=");
             
-            Assert.Equal(200, response.StatusCode);
-            Assert.Equal("Disconnected", response.Body);
+            Assert.Equal(200, response.Result.StatusCode);
+            Assert.Equal("Disconnected", response.Result.Body);
         }
     }
 }

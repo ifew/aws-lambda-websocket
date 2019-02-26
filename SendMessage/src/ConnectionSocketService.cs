@@ -18,7 +18,8 @@ namespace SendMessage
 
         public List<ConnectionSocketModel> ListConnection(string connection_id)
         {
-            List<ConnectionSocketModel> data_list = _context_db.Connections.Where(p => p.connection_id == connection_id).ToList();
+            //List<ConnectionSocketModel> data_list = _context_db.Connections.Where(p => p.connection_id == connection_id).ToList();
+            List<ConnectionSocketModel> data_list = _context_db.Connections.ToList();
 
             return data_list;
         }
@@ -36,26 +37,6 @@ namespace SendMessage
                     { "Access-Control-Allow-Origin", "*" } 
                 },
                 Body = "Disconnected"
-            };
-
-            return respond;
-        }
-
-        public APIGatewayProxyResponse AddConnection(ConnectionSocketModel data)
-        {
-            data.add_datetime = DateTime.Now;
-            
-            _context_db.Connections.Add(data);
-            _context_db.SaveChanges();
-
-            APIGatewayProxyResponse respond = new APIGatewayProxyResponse {
-                StatusCode = (int)HttpStatusCode.OK,
-                Headers = new Dictionary<string, string>
-                { 
-                    { "Content-Type", "application/json" }, 
-                    { "Access-Control-Allow-Origin", "*" } 
-                },
-                Body = "Connected"
             };
 
             return respond;

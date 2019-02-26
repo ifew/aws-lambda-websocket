@@ -29,7 +29,7 @@ namespace OnDisconnect
             
             try
             {
-                ConnectionSocketInputModel connectionInput = JsonConvert.DeserializeObject<ConnectionSocketInputModel>(request.Body);
+                //ConnectionSocketInputModel connectionInput = JsonConvert.DeserializeObject<ConnectionSocketInputModel>(request.Body);
             
                 var connectionId = request.RequestContext.ConnectionId;
                 context.Logger.LogLine($"ConnectionId: {connectionId}");
@@ -41,7 +41,7 @@ namespace OnDisconnect
                 // };
                 
                 var connectionService = _service.GetService<ConnectionSocketService>();
-                var response = connectionService.DeleteConnection(connectionId);
+                var response = await connectionService.DeleteConnection(connectionId);
 
                 return response;
             }

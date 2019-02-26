@@ -57,7 +57,7 @@ namespace SendMessage
                 foreach (var connection in list_connections)
                 {
                     var connectionId = connection.connection_id;
-
+                    context.Logger.LogLine($"Get Connection ID from DB: {connectionId}");
 
                     var postConnectionRequest = new PostToConnectionRequest
                     {

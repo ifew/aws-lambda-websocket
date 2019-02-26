@@ -18,7 +18,7 @@ namespace OnConnect.Tests
 {
     public class FunctionTest
     {
-        [Fact]
+        //[Fact]
         public void IntegrationTestPostMethod()
         {
             var requestString = File.ReadAllText("./SampleRequests/TestPostMethod.json");
@@ -80,8 +80,8 @@ namespace OnConnect.Tests
 
             var response = service.AddConnection(data);
             
-            Assert.Equal(200, response.StatusCode);
-            Assert.Equal("Connected", response.Body);
+            Assert.Equal(200, response.Result.StatusCode);
+            Assert.Equal("Connected", response.Result.Body);
         }
     }
 }
