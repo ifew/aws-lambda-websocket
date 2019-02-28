@@ -14,6 +14,13 @@ This implement based from https://github.com/normj/netcore-simple-websockets-cha
 
 2. Push to AWS Lambda
 
+4. test on Web Socket Test Tools such as https://chrome.google.com/webstore/detail/simple-websocket-client/pfdhoblngboilpfeibdedpjgfnlcodoo?hl=en
+
+5. connect and send data such as
+```json
+{"action":"sendmessage","data":"hello"}
+```
+
 ## Acknowledge
 - I don't know how to create Unit Test in SendMessage Function (Only SendMessage Function not have Unit Test)
 - I don't know how to test on localhost
