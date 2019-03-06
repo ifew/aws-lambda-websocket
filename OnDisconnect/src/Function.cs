@@ -47,12 +47,12 @@ namespace OnDisconnect
             }
             catch (Exception e)
             {
-                context.Logger.LogLine("Error connecting: " + e.Message);
+                context.Logger.LogLine("Error disconnecting: " + e.Message);
                 context.Logger.LogLine(e.StackTrace);
                 return new APIGatewayProxyResponse
                 {
                     StatusCode = 500,
-                    Body = $"Failed to connect: {e.Message}" 
+                    Body = $"Failed to disconnect: {e.Message}" 
                 };
             }
         }
