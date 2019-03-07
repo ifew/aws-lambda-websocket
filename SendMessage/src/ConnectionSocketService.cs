@@ -16,9 +16,9 @@ namespace SendMessage
             _context_db = context_db;
         }
 
-        public List<ConnectionSocketModel> ListConnection()
+        public async Task<List<ConnectionSocketModel>> ListConnection()
         {
-            List<ConnectionSocketModel> data_list = _context_db.Connections.ToList();
+            List<ConnectionSocketModel> data_list = await _context_db.Connections.ToListAsync();
 
             return data_list;
         }
@@ -48,26 +48,36 @@ namespace SendMessage
             return respond;
         }
 
-        public List<ConnectionSocketModel> ListConnectionInChannel(string channel) {
-            List<ConnectionSocketModel> data_list = _context_db.Connections.Where(c => c.channel == channel).ToList();
+        public async Task<List<ConnectionSocketModel>> ListConnectionInChannel(string channel) {
+            List<ConnectionSocketModel> data_list = await _context_db.Connections.Where(c => c.channel == channel).ToListAsync();
             return data_list;
         }
 
-        public List<ConnectionSocketModel> SendToConnection(string connection_id) {
-            List<ConnectionSocketModel> data_list = _context_db.Connections.Where(c => c.connection_id == connection_id).ToList();
+        public async Task<List<ConnectionSocketModel>> SendToConnection(string connection_id) {
+            List<ConnectionSocketModel> data_list = await _context_db.Connections.Where(c => c.connection_id == connection_id).ToListAsync();
             return data_list;
         }
 
-        public ConnectionSocketModel SendToConnectionChannel(string connection_id, string channel)
+        public async Task<ConnectionSocketModel>SendToConnectionChannel(string connection_id, string channel)
         {
-            ConnectionSocketModel data = _context_db.Connections.Where(c => c.connection_id == connection_id && c.channel == channel).FirstOrDefault();
+            var isChannel = false;
+            var isConnection = false;
 
-            if(data.connection_id == null)
+            if (!String.IsNullOrEmpty(channel))
+                isChannel = true;
+
+            if (!String.IsNullOrEmpty(connection_id))
+                isConnection = true;
+
+            if (isConnection && isChannel)
             {
-                return new ConnectionSocketModel();
+                ConnectionSocketModel data = await _context_db.Connections.Where(c => c.connection_id == connection_id && c.channel == channel).FirstOrDefaultAsync();
+                return data;
             }
 
-            return data;
+            return new ConnectionSocketModel();
+
+
         }
     }
 }

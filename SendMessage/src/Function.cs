@@ -35,89 +35,92 @@ namespace SendMessage
 
         public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            // try
-            // {
-            var domainName = request.RequestContext.DomainName;
-            var stage = request.RequestContext.Stage;
-            var endpoint = $"https://{domainName}/{stage}";
-            context.Logger.LogLine($"API Gateway management endpoint: {endpoint}");
-
-            var message = JsonConvert.DeserializeObject<JObject>(request.Body);
-            var data = message["data"]?.ToString();
-            var connection_id = message["connection_id"]?.ToString();
-            var channel = message["channel"]?.ToString();
-
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
-
-            var apiClient = new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
+            try
             {
-                ServiceURL = endpoint
-            });
+                var domainName = request.RequestContext.DomainName;
+                var stage = request.RequestContext.Stage;
+                var endpoint = $"https://{domainName}/{stage}";
+                context.Logger.LogLine($"API Gateway management endpoint: {endpoint}");
 
-            bool post_multiple = false;
-            bool post_single = false;
-            List<ConnectionSocketModel> list_connections = new List<ConnectionSocketModel>();
-            ConnectionSocketModel connection = new ConnectionSocketModel();
+                var message = JsonConvert.DeserializeObject<JObject>(request.Body);
+                var data = message["data"]?.ToString();
+                var connection_id = message["connection_id"]?.ToString();
+                var channel = message["channel"]?.ToString();
 
-            if (CheckJObjectKeyValue(connection_id) == false && CheckJObjectKeyValue(channel) == false)
-            {
-                context.Logger.LogLine($"Not have connection_id and channel");
-                list_connections = _connectionService.ListConnection();
-                post_multiple = true;
-            } 
-            else if (CheckJObjectKeyValue(connection_id) && CheckJObjectKeyValue(channel))
-            {
-                context.Logger.LogLine($"Have connection_id as: {connection_id}, and channel as: {channel}");
-                connection = _connectionService.SendToConnectionChannel(connection_id, channel);
-                post_single = true;
-            }
-            else if (CheckJObjectKeyValue(channel) && CheckJObjectKeyValue(connection_id) == false)
-            {
-                context.Logger.LogLine($"Have only channel as: {channel}");
-                list_connections = _connectionService.ListConnectionInChannel(channel);
-                post_multiple = true;
-            }
-            else if (CheckJObjectKeyValue(connection_id) && CheckJObjectKeyValue(channel) == false)
-            {
-                context.Logger.LogLine($"Have only connection_id as: {connection_id}");
-                list_connections = _connectionService.SendToConnection(connection_id);
-                post_multiple = true;
-            }
+                var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
-            if (post_single)
-            {
-                if (connection.connection_id != null)
+                var apiClient = new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
                 {
-                    await PostToConnection(connection, stream, _connectionService, apiClient, context);
-                }
-            }
+                    ServiceURL = endpoint
+                });
 
-            if (post_multiple)
-            {
-                if (list_connections.Any()) { 
-                    foreach (var connection_item in list_connections)
+                bool post_multiple = false;
+                bool post_single = false;
+                List<ConnectionSocketModel> list_connections = new List<ConnectionSocketModel>();
+                ConnectionSocketModel connection = new ConnectionSocketModel();
+
+                if (CheckJObjectKeyValue(connection_id) == false && CheckJObjectKeyValue(channel) == false)
+                {
+                    context.Logger.LogLine($"Not have connection_id and channel");
+                    list_connections = await _connectionService.ListConnection();
+                    post_multiple = true;
+                }
+                else if (CheckJObjectKeyValue(connection_id) && CheckJObjectKeyValue(channel))
+                {
+                    context.Logger.LogLine($"Have connection_id as: {connection_id}, and channel as: {channel}");
+                    connection = await _connectionService.SendToConnectionChannel(connection_id, channel);
+                    post_single = true;
+                }
+                else if (CheckJObjectKeyValue(channel) && CheckJObjectKeyValue(connection_id) == false)
+                {
+                    context.Logger.LogLine($"Have only channel as: {channel}");
+                    list_connections = await _connectionService.ListConnectionInChannel(channel);
+                    post_multiple = true;
+                }
+                else if (CheckJObjectKeyValue(connection_id) && CheckJObjectKeyValue(channel) == false)
+                {
+                    context.Logger.LogLine($"Have only connection_id as: {connection_id}");
+                    list_connections = await _connectionService.SendToConnection(connection_id);
+                    post_multiple = true;
+                }
+
+                if (post_single)
+                {
+                    if (connection != null)
                     {
-                        await PostToConnection(connection_item, stream, _connectionService, apiClient, context);
+                        context.Logger.LogLine($"Post to single connection {connection.connection_id}");
+                        await PostToConnection(connection, stream, _connectionService, apiClient, context);
                     }
                 }
-            }
 
-            return new APIGatewayProxyResponse
+                if (post_multiple)
+                {
+                    if (list_connections.Any())
+                    {
+                        foreach (var connection_item in list_connections)
+                        {
+                            context.Logger.LogLine($"Post to multiple connection {connection_item.connection_id}");
+                            await PostToConnection(connection_item, stream, _connectionService, apiClient, context);
+                        }
+                    }
+                }
+
+                return new APIGatewayProxyResponse
+                {
+                    StatusCode = 200,
+                    Body = "Data sent"
+                };
+            }
+            catch (Exception e)
             {
-                StatusCode = 200,
-                Body = "Data sent"
-            };
-            // }
-            // catch (Exception e)
-            // {
-            //     context.Logger.LogLine("Error disconnecting: " + e.Message);
-            //     context.Logger.LogLine(e.StackTrace);
-            //     return new APIGatewayProxyResponse
-            //     {
-            //         StatusCode = 500,
-            //         Body = $"Failed to send message: {e.Message}" 
-            //     };
-            // }
+                context.Logger.LogLine("Error disconnecting: " + e.Message);
+                context.Logger.LogLine(e.StackTrace);
+                return new APIGatewayProxyResponse
+                {
+                    StatusCode = 500,
+                    Body = $"Failed to send message: {e.Message}"
+                };
+            }
         }
 
         public async Task PostToConnection(ConnectionSocketModel connection, MemoryStream stream, ConnectionSocketService connectionService, AmazonApiGatewayManagementApiClient apiClient, ILambdaContext context)
