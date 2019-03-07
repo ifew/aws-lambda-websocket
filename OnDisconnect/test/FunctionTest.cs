@@ -36,9 +36,8 @@ namespace OnDisconnect.Tests
             Assert.Equal(200, response.Result.StatusCode);
             Assert.Equal("Connected", response.Result.Body);
         }
-
         
-        //[Fact]
+        [Fact]
         public void TestPostMethod()
         {
             var requestString = File.ReadAllText("./SampleRequests/TestPostMethod.json");

@@ -7,6 +7,7 @@
   "pathParameters": null,
   "stageVariables": null,
   "requestContext": {
+    "connectionId": "xCKJA1233=",
     "accountId": "AAAAAAAAAAAA",
     "resourceId": "5agfss",
     "stage": "test-invoke-stage",
@@ -28,5 +29,5 @@
     "httpMethod": "Post",
     "apiId": "t2yh6sjnmk"
   },
-  "body": "{\"connectionId\" : \"xCKJA1233=\""
+  "body": ""
 }

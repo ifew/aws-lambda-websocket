@@ -49,6 +49,7 @@ namespace OnDisconnect
             {
                 context.Logger.LogLine("Error disconnecting: " + e.Message);
                 context.Logger.LogLine(e.StackTrace);
+                System.Console.WriteLine(e.Message);
                 return new APIGatewayProxyResponse
                 {
                     StatusCode = 500,
