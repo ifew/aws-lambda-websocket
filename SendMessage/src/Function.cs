@@ -80,8 +80,8 @@ namespace SendMessage
                 else if (CheckJObjectKeyValue(connection_id) && CheckJObjectKeyValue(channel) == false)
                 {
                     context.Logger.LogLine($"Have only connection_id as: {connection_id}");
-                    list_connections = await _connectionService.SendToConnection(connection_id);
-                    post_multiple = true;
+                    connection = await _connectionService.SendToConnection(connection_id);
+                    post_single = true;
                 }
 
                 if (post_single)

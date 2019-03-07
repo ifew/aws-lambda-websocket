@@ -53,9 +53,9 @@ namespace SendMessage
             return data_list;
         }
 
-        public async Task<List<ConnectionSocketModel>> SendToConnection(string connection_id) {
-            List<ConnectionSocketModel> data_list = await _context_db.Connections.Where(c => c.connection_id == connection_id).ToListAsync();
-            return data_list;
+        public async Task<ConnectionSocketModel> SendToConnection(string connection_id) {
+            ConnectionSocketModel data = await _context_db.Connections.Where(c => c.connection_id == connection_id).FirstOrDefaultAsync();
+            return data;
         }
 
         public async Task<ConnectionSocketModel>SendToConnectionChannel(string connection_id, string channel)
