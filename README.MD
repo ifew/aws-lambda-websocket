@@ -22,5 +22,4 @@ This implement based from https://github.com/normj/netcore-simple-websockets-cha
 ```
 
 ## Acknowledge
-- I don't know how to create Unit Test in SendMessage Function (Only SendMessage Function not have Unit Test)
 - I don't know how to test on localhost

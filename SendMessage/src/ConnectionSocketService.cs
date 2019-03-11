@@ -16,12 +16,18 @@ namespace SendMessage
             _context_db = context_db;
         }
 
-        public List<ConnectionSocketModel> ListConnection(string connection_id)
+        public async Task<List<ConnectionSocketModel>> ListConnection()
         {
-            //List<ConnectionSocketModel> data_list = _context_db.Connections.Where(p => p.connection_id == connection_id).ToList();
-            List<ConnectionSocketModel> data_list = _context_db.Connections.ToList();
+            List<ConnectionSocketModel> data_list = await _context_db.Connections.ToListAsync();
 
             return data_list;
+        }
+
+        public ConnectionSocketModel GetConnection(string connection_id)
+        {
+            ConnectionSocketModel data = _context_db.Connections.Where(c => c.connection_id == connection_id).FirstOrDefault();
+
+            return data;
         }
 
         public APIGatewayProxyResponse DeleteConnection(string connection_id)
@@ -40,6 +46,38 @@ namespace SendMessage
             };
 
             return respond;
+        }
+
+        public async Task<List<ConnectionSocketModel>> ListConnectionInChannel(string channel) {
+            List<ConnectionSocketModel> data_list = await _context_db.Connections.Where(c => c.channel == channel).ToListAsync();
+            return data_list;
+        }
+
+        public async Task<ConnectionSocketModel> SendToConnection(string connection_id) {
+            ConnectionSocketModel data = await _context_db.Connections.Where(c => c.connection_id == connection_id).FirstOrDefaultAsync();
+            return data;
+        }
+
+        public async Task<ConnectionSocketModel>SendToConnectionChannel(string connection_id, string channel)
+        {
+            var isChannel = false;
+            var isConnection = false;
+
+            if (!String.IsNullOrEmpty(channel))
+                isChannel = true;
+
+            if (!String.IsNullOrEmpty(connection_id))
+                isConnection = true;
+
+            if (isConnection && isChannel)
+            {
+                ConnectionSocketModel data = await _context_db.Connections.Where(c => c.connection_id == connection_id && c.channel == channel).FirstOrDefaultAsync();
+                return data;
+            }
+
+            return new ConnectionSocketModel();
+
+
         }
     }
 }

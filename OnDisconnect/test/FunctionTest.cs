@@ -36,9 +36,8 @@ namespace OnDisconnect.Tests
             Assert.Equal(200, response.Result.StatusCode);
             Assert.Equal("Connected", response.Result.Body);
         }
-
         
-        //[Fact]
+        [Fact]
         public void TestPostMethod()
         {
             var requestString = File.ReadAllText("./SampleRequests/TestPostMethod.json");
@@ -55,9 +54,7 @@ namespace OnDisconnect.Tests
             FunctionContext db_add_context = provider.GetRequiredService<FunctionContext>();
             db_add_context.Connections.Add(new ConnectionSocketModel { 
                 id = 1,
-                connection_id = "xCKJA1233=",
-                user_id = "900123456",
-                channel = "aFc34gxe9v"
+                connection_id = "xCKJA1233="
             });
             db_add_context.SaveChanges();
 
