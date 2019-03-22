@@ -1,6 +1,9 @@
 # Example using .Net Core 2 Web Socket with AWS Lambda
 
-This implement based from https://github.com/normj/netcore-simple-websockets-chat-app
+This implement based from 
+
+- https://github.com/normj/netcore-simple-websockets-chat-app
+- https://github.com/radu-matei/websocket-manager
 
 ## Must have
 
