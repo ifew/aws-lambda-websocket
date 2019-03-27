@@ -8,6 +8,7 @@ This implement based from
 ## Must have
 
 - Amazon.Lambda.APIGatewayEvents Version 1.2.0 (This only version to support API Gateway Web Socket)
+- MySQL for store Connection ID
 
 ## Setup
 
